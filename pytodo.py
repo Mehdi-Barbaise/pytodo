@@ -30,11 +30,11 @@ tasks = []
 def load_tasks():
     global tasks
     try:
-        with open(".tasks.dat", "rb") as file:
+        with open(".tasks.pkl", "rb") as file:
             tasks = pickle.load(file)
-        print("Tasks have been loaded from .tasks.dat")
+        print("Tasks have been loaded from .tasks.pkl")
     except:
-        print("ERROR: There's nothing to load (missing .tasks.dat file?)")
+        print("ERROR: There's nothing to load (missing .tasks.pkl file?)")
 
 # List all tasks function
 def view_tasks():
@@ -47,9 +47,9 @@ def view_tasks():
 
 # Save Tasks function
 def save_tasks():
-    with open(".tasks.dat", "wb") as save_file:
+    with open(".tasks.pkl", "wb") as save_file:
         pickle.dump(tasks, save_file)
-    print("Tasks have been saved to .tasks.dat")
+    print("Tasks have been saved to .tasks.pkl")
 
 
 ## WINDOWS
