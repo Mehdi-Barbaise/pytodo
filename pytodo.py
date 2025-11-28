@@ -1,3 +1,4 @@
+import os
 import sys
 import datetime
 import pickle
@@ -28,19 +29,20 @@ tasks = []
 
 # Save Tasks function
 def save_tasks():
-    with open(".tasks.pkl", "wb") as save_file:
+    path_to_save = os.path.join(os.path.expanduser("~"), "tasks.pkl")
+    with open("tasks.pkl", "wb") as save_file:
         pickle.dump(tasks, save_file, protocol=pickle.HIGHEST_PROTOCOL)
-    print("Tasks have been saved to .tasks.pkl")
+    print("Tasks have been saved to tasks.pkl, in User's home folder")
 
 # Load tasks function
 def load_tasks():
     global tasks
     try:
-        with open(".tasks.pkl", "rb") as file:
+        with open("tasks.pkl", "rb") as file:
             tasks = pickle.load(file)
-        print("Tasks have been loaded from .tasks.pkl")
+        print("Tasks have been loaded from tasks.pkl")
     except:
-        print("ERROR: There's nothing to load (missing .tasks.dat file?)")
+        print("ERROR: There's nothing to load (missing tasks.pkl file?)")
 
 # List all tasks function
 def view_tasks():
@@ -263,4 +265,3 @@ if __name__ == '__main__':
     fenetre = FenetrePrincipale()
     fenetre.show()
     sys.exit(app.exec_())
-
