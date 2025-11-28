@@ -26,6 +26,12 @@ class Task:
 
 tasks = []
 
+# Save Tasks function
+def save_tasks():
+    with open(".tasks.pkl", "wb") as save_file:
+        pickle.dump(tasks, save_file, protocol=pickle.HIGHEST_PROTOCOL)
+    print("Tasks have been saved to .tasks.pkl")
+
 # Load tasks function
 def load_tasks():
     global tasks
@@ -34,7 +40,7 @@ def load_tasks():
             tasks = pickle.load(file)
         print("Tasks have been loaded from .tasks.pkl")
     except:
-        print("ERROR: There's nothing to load (missing .tasks.pkl file?)")
+        print("ERROR: There's nothing to load (missing .tasks.dat file?)")
 
 # List all tasks function
 def view_tasks():
@@ -44,13 +50,6 @@ def view_tasks():
         print(f'Completed: {i.completed}')
         print(f'Description: {i.description}')
         print()
-
-# Save Tasks function
-def save_tasks():
-    with open(".tasks.pkl", "wb") as save_file:
-        pickle.dump(tasks, save_file)
-    print("Tasks have been saved to .tasks.pkl")
-
 
 ## WINDOWS
 
@@ -265,9 +264,3 @@ if __name__ == '__main__':
     fenetre.show()
     sys.exit(app.exec_())
 
-
-# To-do:
-# - Ajouter fonction modifier due date et description
-# - Forcer le format des due dates
-# - Afficher les dates à droite
-# - Trier les tâches par date
