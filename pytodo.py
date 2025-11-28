@@ -30,9 +30,9 @@ tasks = []
 # Save Tasks function
 def save_tasks():
     path_to_save = os.path.join(os.path.expanduser("~"), "tasks.pkl")
-    with open("tasks.pkl", "wb") as save_file:
-        pickle.dump(tasks, save_file, protocol=pickle.HIGHEST_PROTOCOL)
-    print(f"Tasks have been successfully saved to: {chemin}")
+    with open(path_to_save, "wb") as file:
+        pickle.dump(tasks, file, protocol=pickle.HIGHEST_PROTOCOL)
+    print(f"Tasks have been successfully saved to: {path_to_save}")
 
 # Load tasks function
 def load_tasks():
