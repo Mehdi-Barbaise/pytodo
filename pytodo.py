@@ -37,8 +37,9 @@ def save_tasks():
 # Load tasks function
 def load_tasks():
     global tasks
+    path_to_load = os.path.join(os.path.expanduser("~"), "tasks.pkl")
     try:
-        with open("tasks.pkl", "rb") as file:
+        with open(path_to_load, "rb") as file:
             tasks = pickle.load(file)
         print("Tasks have been successfully loaded from tasks.pkl")
     except:
