@@ -2,6 +2,8 @@ import os
 import sys
 from datetime import datetime
 import pickle
+from operator import attrgetter
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox
 from qt_material import apply_stylesheet
 
@@ -266,8 +268,13 @@ class FenetrePrincipale(QWidget):
     # Functions
     def refresh_tasks_list(self):
         self.t_list.clear()
-        for i in tasks:
-            item = QListWidgetItem(f"{i.name} - Due: {i.due_date}")
+
+        pending_tasks = sorted([t for t in tasks if not t.completed], key=attrgetter('due_date'))
+        completed_tasks = sorted([t for t in tasks if t.completed], key=attrgetter('due_date'))
+
+        for i in pending_tasks + completed_tasks:
+            item = QListWidgetItem(f"{i.name} - Due: {i.due_date.strftime('%m-%d-%Y')}")
+            item.setData(Qt.UserRole, i)
             if i.completed:
                 font = item.font()
                 font.setStrikeOut(True)
@@ -287,7 +294,9 @@ class FenetrePrincipale(QWidget):
     def remove_selected_task(self):
         current_row = self.t_list.currentRow()
         if current_row >=0:
-            del tasks[current_row]
+            item = self.t_list.item(current_row)
+            task = item.data(Qt.UserRole)
+            tasks.remove(task)
             self.refresh_tasks_list()
         else:
             QMessageBox.warning(self, "No selected task", "Please first select a task to remove.")
@@ -295,11 +304,12 @@ class FenetrePrincipale(QWidget):
     def mark_completed(self):
         current_row = self.t_list.currentRow()
         if current_row >=0:
-            if not tasks[current_row].completed:
-                tasks[current_row].completed = True
-            elif tasks[current_row].completed:
-                tasks[current_row].completed = False
-
+            item = self.t_list.item(current_row)
+            task = item.data(Qt.UserRole)
+            if not task.completed:
+                task.completed = True
+            elif task.completed:
+                task.completed = False
             self.refresh_tasks_list()
         else:
             QMessageBox.warning(self, "No selected task", "Please select a task first.")
@@ -335,3 +345,4 @@ if __name__ == '__main__':
     fenetre = FenetrePrincipale()
     fenetre.show()
     sys.exit(app.exec_())
+
