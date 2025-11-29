@@ -1,7 +1,7 @@
 # pytodo
 Graphical To-Do list made with Python
 
-Tested on Gnome, KDE, and Windows environments.
+Tested on Gnome, KDE, and Windows 11 environments.
 
 Requirements: 
 - Python3
