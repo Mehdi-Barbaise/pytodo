@@ -5,7 +5,7 @@ import pickle
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox
 from qt_material import apply_stylesheet
 
-# Task Class
+# "Task" Class
 class Task:
     def __init__(self, name, due_date, description):
         self.name = name
@@ -26,6 +26,8 @@ class Task:
         self.completed = True
 
 tasks = []
+
+## Functions That need to be set out of any Window
 
 # Save Tasks function
 def save_tasks():
@@ -54,7 +56,7 @@ def view_tasks():
         print(f'Description: {i.description}')
         print()
 
-## WINDOWS
+## Windows
 
 class FenetreSecondaire(QDialog):
     def __init__(self, parent=None):
@@ -156,8 +158,44 @@ class FenetrePrincipale(QWidget):
                 background-color: #003f7f;
             }
         """)
-        self.mark_completed_button.setFlat(True)
-        layout.addWidget(self.mark_completed_button)
+
+        # "Add Task" button
+        self.add_task_button = QPushButton('➕ Add Task')
+        self.add_task_button.clicked.connect(self.open_add_task_window)
+        self.add_task_button.setStyleSheet("""
+            QpushButton {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px
+                padding: 8px
+                fontweight: bold;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+            QPushButton:pressed {
+                background-color: #003f7f;
+            }
+        """)
+
+        # "Save" button
+        self.save_button = QPushButton('💾 Save Tasks')
+        self.save_button.clicked.connect(self.do_save_tasks)
+        self.save_button.setStyleSheet("""
+            QpushButton {
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px
+                padding: 8px
+                fontweight: bold;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+            QPushButton:pressed {
+                background-color: #003f7f;
+            }
+        """)
 
         # "Remove task" button
         self.remove_button = QPushButton("🗑️ Remove Selected Task")
@@ -176,26 +214,21 @@ class FenetrePrincipale(QWidget):
                 color: white;
             }
         """)
-        self.remove_button.setFlat(True)
-        layout.addWidget(self.remove_button)
+
+        # Buttons List to add/activate
+        buttons_list = [self.add_task_button, self.mark_completed_button, self.save_button, self.remove_button]
+        for i in buttons_list:
+            i.setFlat(True)
+            layout.addWidget(i)
 
         layout.addSpacing(20)
 
-        # Buttons
-        self.button2 = QPushButton("Add Task")
-        self.button2.clicked.connect(self.open_add_task_window)
+        # Quit Button
+        self.quit_button = QPushButton("Quit")
+        self.quit_button.clicked.connect(self.quit)
+        layout.addWidget(self.quit_button)
 
-        self.button3 = QPushButton("Save")
-        self.button3.clicked.connect(self.do_save_tasks)
-
-        self.button4 = QPushButton("Quit")
-        self.button4.clicked.connect(self.quit)
-
-        buttons_list = [self.button2, self.button3, self.button4]
-
-        for i in buttons_list:
-            layout.addWidget(i)
-
+        # Set Tasks list and layout
         self.setLayout(layout)
         self.tasks_list = tasks
 
@@ -239,7 +272,6 @@ class FenetrePrincipale(QWidget):
             self.refresh_tasks_list()
         else:
             QMessageBox.warning(self, "No selected task", "Please select a task first.")
-            
 
     def open_add_task_window(self):
         dialog = AddTaskWindow(self)
@@ -257,6 +289,8 @@ class FenetrePrincipale(QWidget):
 
     def quit(self):
         self.close()
+
+##  Load Tasks 1st time, then launch main window
 
 load_tasks()
 
