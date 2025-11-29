@@ -286,10 +286,10 @@ class FenetrePrincipale(QWidget):
         self.list_tasks_window.show()
 
     def open_task_details(self, item):
-        row = self.t_list.row(item)
-        task = tasks[row]
-        dlg = TaskDetailsWindow(task, self)
-        dlg.exec_()
+        if item:
+            task = item.data(Qt.UserRole)
+            dlg = TaskDetailsWindow(task, self)
+            dlg.exec_()
 
     def remove_selected_task(self):
         current_row = self.t_list.currentRow()
@@ -345,4 +345,3 @@ if __name__ == '__main__':
     fenetre = FenetrePrincipale()
     fenetre.show()
     sys.exit(app.exec_())
-
