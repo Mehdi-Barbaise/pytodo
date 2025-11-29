@@ -4,7 +4,7 @@ from datetime import datetime
 import pickle
 from operator import attrgetter
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox, QTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox, QTextEdit
 from qt_material import apply_stylesheet
 
 # "Task" Class
@@ -177,6 +177,28 @@ class FenetrePrincipale(QWidget):
         # Tasks list
         self.t_list = QListWidget()
         self.refresh_tasks_list()
+
+        self.t_list.setStyleSheet("""
+            QListWidget {
+                background-color: #2c3e50;
+                color: #ecf0f1;
+                border: 2px solid #34495e;
+                border-radius: 8px;
+                font-family: 'Consolas', 'Courier New', monospace;
+                font-size 13px;
+                padding: 5px;
+            }
+            QListWidget::item {
+                padding: 10px;
+                border-bottom: 1px solid #1a252f;
+            }
+            QListWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+            }
+        """)
+        self.t_list.setWordWrap(False)
+
         self.t_list.itemDoubleClicked.connect(self.open_task_details)
         layout.addWidget(QLabel("Tasks list:"))
         layout.addWidget(self.t_list)
@@ -283,13 +305,44 @@ class FenetrePrincipale(QWidget):
         pending_tasks = sorted([t for t in tasks if not t.completed], key=attrgetter('due_date'))
         completed_tasks = sorted([t for t in tasks if t.completed], key=attrgetter('due_date'))
 
-        for i in pending_tasks + completed_tasks:
-            item = QListWidgetItem(f"{i.name} - Due: {i.due_date.strftime('%m-%d-%Y')}")
+        max_name_length = 35
+
+        for i in pending_tasks:
+            days_left = (i.due_date - datetime.now().date()).days
+
+            if days_left <= 1:
+                icon = "🔴"
+                urgency = "URGENT"
+            elif days_left <= 3:
+                icon = "🟡"
+                urgency = "Soon"
+            else:
+                icon = "🟢"
+                urgency = "OK"
+
+            name_short = (i.name + " " * max_name_length)[:max_name_length]
+            text = f"{icon} {name_short} {i.due_date.strftime('%m-%d-%Y')} ({urgency})"
+
+            item = QListWidgetItem(text)
             item.setData(Qt.UserRole, i)
-            if i.completed:
-                font = item.font()
-                font.setStrikeOut(True)
-                item.setFont(font)
+            self.t_list.addItem(item)
+
+        separator = QListWidgetItem("───────────────────────── COMPLETED ─────────────────────────")
+        separator.setData(Qt.UserRole, None)
+        font = separator.font()
+        font.setItalic(True)
+        separator.setFont(font)
+        self.t_list.addItem(separator)
+
+        for i in completed_tasks:
+            name_short = (i.name + " " * max_name_length)[:max_name_length]
+            text = f"✅ {name_short}  {i.due_date.strftime('%Y-%m-%d')}"
+
+            item = QListWidgetItem(text)
+            item.setData(Qt.UserRole, i)
+            font = item.font()
+            font.setStrikeOut(True)
+            item.setFont(font)
             self.t_list.addItem(item)
 
     def open_list_tasks_window(self):
