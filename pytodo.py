@@ -1,17 +1,27 @@
 import os
 import sys
-import datetime
+from datetime import datetime
 import pickle
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox
 from qt_material import apply_stylesheet
 
 # "Task" Class
 class Task:
-    def __init__(self, name, due_date, description):
+    def __init__(self, name, due_date_str, description):
         self.name = name
-        self.due_date = due_date
         self.completed = False
         self.description = description
+
+        if not due_date_str or not due_date_str.strip():
+            raise ValueError("You must set a due date!")
+
+        try:
+            self.due_date = datetime.strptime(due_date_str, "%m-%d-%Y").date()
+        except ValueError as e:
+            raise ValueError(f"Invalid date format! Use MM-DD-YYYY")
+
+    def __str__(self):
+        return f"{self.name} - Due: {self.due_date.strftime('%m-%d-%Y')}"
 
     def change_name(self, new_name):
         self.name = new_name
@@ -67,17 +77,18 @@ class AddTaskWindow(QDialog):
         layout = QVBoxLayout()
         
         self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("Task Name")
+        self.name_input.setPlaceholderText("Task Name or Title (ex: 'Buy a book')")
         layout.addWidget(QLabel("Task Name:"))
         layout.addWidget(self.name_input)
 
         self.date_input = QLineEdit()
-        self.date_input.setPlaceholderText("Due-Date")
-        layout.addWidget(QLabel("Due Date:"))
+        self.date_input.setPlaceholderText("Ex: 01-31-2026")
+        layout.addWidget(QLabel("Due Date (MM-DD-YYYY):"))
+        self.date_input.textChanged.connect(self.validate_date)
         layout.addWidget(self.date_input)
 
         self.desc_input = QLineEdit()
-        self.desc_input.setPlaceholderText("Description")
+        self.desc_input.setPlaceholderText("Description details")
         layout.addWidget(QLabel("Description:"))
         layout.addWidget(self.desc_input)
 
@@ -89,12 +100,41 @@ class AddTaskWindow(QDialog):
         self.setLayout(layout)
         self.result = None
 
+    def validate_date(self):
+        date_text = self.date_input.text()
+
+        if not date_text:
+            self.date_input.setStyleSheet("")
+            return
+            
+        try:
+            datetime.strptime(date_text, "%m-%d-%Y")
+            self.date_input.setStyleSheet("QLineEdit { border: 2px solid green; }")
+        except ValueError:
+            self.date_input.setStyleSheet("QLineEdit { border: 2px solid red; }")
+
+    def validate_and_accept(self):
+        date_text = self.date_input.text().strip()
+        
+        if not date_text:
+            QMessageBox.warning(self, "Error: due date is mandatory!")
+            self.date_input.setFocus()
+            return
+
+        try:
+            datetime.strptime(date_text, "%m-%d-%Y")
+            self.accept()
+        except ValueError:
+            QMessageBox.warning(self, "Erreur", "Invalid Date format!\nUse MM-DD-YYYY")
+            self.date_input.selectAll()
+            self.date_input.setFocus()
+
     def get_task_data(self):
         if self.exec_() == QDialog.Accepted:
             return {
-                'name': self.name_input.text(),
-                'due_date': self.date_input.text(),
-                'description': self.desc_input.text()
+                'name': self.name_input.text().strip(),
+                'due_date': self.date_input.text().strip(),
+                'description': self.desc_input.text().strip()
             }
         return None
 
@@ -267,10 +307,14 @@ class FenetrePrincipale(QWidget):
     def open_add_task_window(self):
         dialog = AddTaskWindow(self)
         task_data = dialog.get_task_data()
+
         if task_data:
-            new_task = Task(task_data['name'], task_data['due_date'], task_data['description'])
-            tasks.append(new_task)
-            self.refresh_tasks_list()
+            try:
+                new_task = Task(task_data['name'], task_data['due_date'], task_data['description'])
+                tasks.append(new_task)
+                self.refresh_tasks_list()
+            except ValueError as e:
+                QMessageBox.critical(self, "Task Error", f"Task creation error: {e}")
 
     def do_save_tasks(self):
         try:
