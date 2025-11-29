@@ -9,6 +9,6 @@ Requirements:
 - Qt-material
 
 Features:
-Add a task, due date, description, mark it as "completed" (it then appears stripped).
+Add a task, sorted by due date, details while double-clicking on a task, mark it as "completed" (it then appears stripped and goes down the list), remove tasks, save tasks.
 
 I plan in the future to add a button to modify an existing task's information.
