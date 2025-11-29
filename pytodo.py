@@ -58,15 +58,6 @@ def view_tasks():
 
 ## Windows
 
-class FenetreSecondaire(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Fenêtre secondaire")
-        self.setGeometry(100, 100, 200, 100)
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Ceci est une fenêtre secondaire"))
-        self.setLayout(layout)
-
 class AddTaskWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
