@@ -4,7 +4,7 @@ from datetime import datetime
 import pickle
 from operator import attrgetter
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QPushButton, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QLineEdit, QDialogButtonBox, QMessageBox, QTextEdit
 from qt_material import apply_stylesheet
 
 # "Task" Class
@@ -143,15 +143,26 @@ class AddTaskWindow(QDialog):
 class TaskDetailsWindow(QDialog):
     def __init__(self, task, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Task Details")
-        self.setGeometry(200, 200, 400, 250)
+        self.task = task
+        self.setWindowTitle(f"Details: {task.name}")
+        self.setGeometry(300, 300, 400, 300)
 
         layout = QVBoxLayout()
 
-        layout.addWidget(QLabel(f"Title: {task.name}"))
-        layout.addWidget(QLabel(f"Due Date: {task.due_date}"))
-        layout.addWidget(QLabel(f"Description: {task.description}"))
-        layout.addWidget(QLabel(f"Completed: {'Yes' if task.completed else 'No'}"))
+        layout.addWidget(QLabel(f"<b>{task.name}</b>"))
+        status = "✅ Completed" if task.completed else "⏳ In Progress"
+        layout.addWidget(QLabel(f"Status: {status}"))
+        layout.addWidget(QLabel(f"Due by: {task.due_date.strftime('%m-%d-%Y')}"))
+
+        layout.addWidget(QLabel(f"Description:"))
+        desc = QTextEdit()
+        desc.setPlainText(task.description or "No description")
+        desc.setReadOnly(True)
+        layout.addWidget(desc)
+        
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self.accept)
+        layout.addWidget(close_button)
 
         self.setLayout(layout)
 
