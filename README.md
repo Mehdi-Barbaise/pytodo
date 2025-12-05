@@ -13,6 +13,4 @@ Add a task, sorted by due date, details while double-clicking on a task, mark it
 
 In the future, I plan to: 
 - Correct some bugs (with the "--------------- Completed ---------------" line, that makes app crash when we select it and try to do "Remove" or "Mark as Completed")
-- Enhance the "task list:" title
-- Add a confirmation message when we click on "Save"
 - add a button to modify an existing task's information.
