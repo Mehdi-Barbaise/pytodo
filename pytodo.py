@@ -39,14 +39,13 @@ class Task:
 
 tasks = []
 
-## Functions That need to be set out of any Window
+## Functions
 
 # Save Tasks function
 def save_tasks():
     path_to_save = os.path.join(os.path.expanduser("~"), "tasks.pkl")
     with open(path_to_save, "wb") as file:
         pickle.dump(tasks, file, protocol=pickle.HIGHEST_PROTOCOL)
-    print(f"Tasks have been successfully saved to: {path_to_save}")
 
 # Load tasks function
 def load_tasks():
@@ -170,11 +169,30 @@ class FenetrePrincipale(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Main Menu")
-        self.setGeometry(100, 100, 500, 500)
+        self.setGeometry(200, 200, 500, 800)
 
         layout = QVBoxLayout()
 
         # Tasks list
+
+        self.tasks_title = QLabel("TASK LIST")
+        self.tasks_title.setAlignment(Qt.AlignCenter)
+        self.tasks_title.setStyleSheet("""
+        QLabel {
+        color: #ecf0f1;
+        font-family: 'Segoe UI';
+        font-size: 22px; 
+        letter-spacing: 0.5px;
+        padding: 14px;
+        background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0 #2c3e50, stop:1 #34495e);
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        margin: 6px 0 12px 0;
+        width: 100%;
+        }
+        """)
+
         self.t_list = QListWidget()
         self.refresh_tasks_list()
 
@@ -184,7 +202,7 @@ class FenetrePrincipale(QWidget):
                 color: #ecf0f1;
                 border: 2px solid #34495e;
                 border-radius: 8px;
-                font-family: 'Consolas', 'Courier New', monospace;
+                font-family: 'Consolas';
                 font-size 13px;
                 padding: 5px;
             }
@@ -200,7 +218,7 @@ class FenetrePrincipale(QWidget):
         self.t_list.setWordWrap(False)
 
         self.t_list.itemDoubleClicked.connect(self.open_task_details)
-        layout.addWidget(QLabel("Tasks list:"))
+        layout.addWidget(self.tasks_title)
         layout.addWidget(self.t_list)
 
         # Separator
@@ -298,7 +316,7 @@ class FenetrePrincipale(QWidget):
         self.setLayout(layout)
         self.tasks_list = tasks
 
-    # Functions
+    # Main Menu Functions
     def refresh_tasks_list(self):
         self.t_list.clear()
 
@@ -391,10 +409,94 @@ class FenetrePrincipale(QWidget):
                 QMessageBox.critical(self, "Task Error", f"Task creation error: {e}")
 
     def do_save_tasks(self):
-        try:
+        if self.confirm_save("tasks.pkl"):
             save_tasks()
-        except:
-            print("Error, couldn't save.")
+            print("✅ Tasks Successfully Saved!")
+        else:
+            print("❌ Save Canceled")
+
+    def confirm_save(self, filename="tasks.pkl"):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("💾 Confirmation")
+        dialog.setFixedSize(400,250)
+        dialog.setModal(True)
+
+        dialog.setStyleSheet("""
+            QDialog {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                          stop:0 #2c3e50, stop:1 #34495e);
+                color: #ecf0f1;
+                border: 2px solid #3498db;
+                border-radius: 12px;
+            }
+            QLabel {
+                font-size: 16px;
+                font-weight: 500;
+                padding: 20px;
+                color: #ecf0f1;
+            }
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+            QPushButton:pressed {
+                background-color: #1f618d;
+            }
+            QPushButton#cancel {
+                background-color: #95a5a6;
+            }
+            QPushButton#cancel:hover {
+                background-color: #7f8c8d;
+            }
+        """)
+
+        icon_label = QLabel("💾")
+        icon_label.setAlignment(Qt.AlignCenter)
+        icon_label.setStyleSheet("font-size: 48px; margin-bottom: 1px;")
+
+        message = QLabel(f"Confirm save: {filename}")
+        message.setAlignment(Qt.AlignCenter)
+
+        yes_button = QPushButton("✅ Yes, SAVE")
+        yes_button.setObjectName("yes")
+        no_button = QPushButton("❌ CANCEL")
+        no_button.setObjectName("cancel")
+
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addStretch()
+        buttons_layout.addWidget(yes_button)
+        buttons_layout.addWidget(no_button)
+        buttons_layout.addStretch()
+
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(icon_label, 0, Qt.AlignCenter)
+        layout.addWidget(message)
+        layout.addLayout(buttons_layout)
+        layout.setSpacing(10)
+
+        result = {"accepted": False}
+
+        def on_yes():
+            result["accepted"] = True
+            dialog.accept()
+
+        def on_no():
+            result["accepted"] = False
+            dialog.reject()
+
+        yes_button.clicked.connect(on_yes)
+        no_button.clicked.connect(on_no)
+
+        dialog.exec_()
+        return result["accepted"]
 
     def quit(self):
         self.close()
@@ -409,3 +511,4 @@ if __name__ == '__main__':
     fenetre = FenetrePrincipale()
     fenetre.show()
     sys.exit(app.exec_())
+
