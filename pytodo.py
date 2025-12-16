@@ -345,7 +345,7 @@ class FenetrePrincipale(QWidget):
             item.setData(Qt.UserRole, i)
             self.t_list.addItem(item)
 
-        separator = QListWidgetItem("───────────────────────── COMPLETED ─────────────────────────")
+        separator = QListWidgetItem("────────────────────── COMPLETED ──────────────────────")
         separator.setData(Qt.UserRole, None)
         font = separator.font()
         font.setItalic(True)
