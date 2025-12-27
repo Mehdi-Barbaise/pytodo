@@ -1,5 +1,5 @@
 # pytodo
-# Author: G3ngh1s
+-- Author: G3ngh1s
 
 Graphical To-Do list made with Python
 
