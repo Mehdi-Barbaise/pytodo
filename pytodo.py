@@ -58,15 +58,6 @@ def load_tasks():
     except:
         print("ERROR: No saved file to load (missing tasks.pkl file?)")
 
-# List all tasks function
-def view_tasks():
-    for i in tasks:
-        print(f'{tasks.index(i) + 1}. {i.name}')
-        print(f'Due Date: {i.due_date}')
-        print(f'Completed: {i.completed}')
-        print(f'Description: {i.description}')
-        print()
-
 ## Windows
 
 class AddTaskWindow(QDialog):
